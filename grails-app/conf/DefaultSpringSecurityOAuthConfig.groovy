@@ -14,6 +14,10 @@
  */
 security {
 	oauth {
+        active = true
+
+        printStatusMessages = true
+
         domainClass = 'OAuthID'
         userLookup {
             oAuthIdsPropertyName = 'oAuthIDs'

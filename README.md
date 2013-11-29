@@ -7,6 +7,12 @@ Adds OAuth-based authentication to the [Spring Security plugin][spring-security-
 
 This plugin provides an OAuth realm that can easily be integrated into existing applications and a host of utility functions to make things like "log in with Twitter" almost trivial.
 
+Upgrade from 2.0.1.1 to 2.0.2
+-----------------------------
+
+From 2.0.2 version provider's service and token are moved into separate plugin, example:
+
+    ':spring-security-oauth-google:0.1'
 
 Installation
 ------------
@@ -15,7 +21,14 @@ In `BuildConfig.groovy`, add the dependency to "plugins" section:
 
     plugins {
         //...
-        compile ':spring-security-oauth:2.0.1.1'
+        compile ':spring-security-oauth:2.0.2'
+
+        // and also you need add at least one of extensions:
+        compile ':spring-security-oauth-facebook:0.1'
+        compile ':spring-security-oauth-google:0.1'
+        compile ':spring-security-oauth-linkedin:0.1'
+        compile ':spring-security-oauth-twitter:0.1'
+        compile ':spring-security-oauth-yahoo:0.1'
         //...
     }
 
@@ -53,6 +66,8 @@ oauth {
             failureUri = '/oauth/twitter/error'
             callback = "${baseURL}/oauth/twitter/callback"
         }
+
+        // 
         linkedin {
             api = org.scribe.builder.api.LinkedInApi
             key = 'oauth_linkedin_key'
@@ -61,6 +76,10 @@ oauth {
             failureUri = '/oauth/linkedin/error'
             callback = "${baseURL}/oauth/linkedin/callback"
         }
+
+        /* depends on spring-security-oauth-google extension */
+
+        // for Google OAuth 1.0
         google {
             api = org.scribe.builder.api.GoogleApi
             key = 'oauth_google_key'
@@ -69,6 +88,17 @@ oauth {
             failureUri = '/oauth/google/error'
             callback = "${baseURL}/oauth/google/callback"
             scope = 'https://www.googleapis.com/auth/userinfo.email'
+        }
+
+        // for Google OAuth 2.0
+        google {
+            api = org.scribe.builder.api.GoogleApi20
+            key = 'oauth_google_key'
+            secret = 'oauth_google_secret'
+            successUri = '/oauth/google/success'
+            failureUri = '/oauth/google/error'
+            callback = "${baseURL}/oauth/google/callback"
+            scope = 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email'
         }
     }
 }
@@ -113,7 +143,25 @@ Logged with linkedin? <s2o:ifLoggedInWith provider="linkedin">yes</s2o:ifLoggedI
 Logged with yahoo? <s2o:ifLoggedInWith provider="yahoo">yes</s2o:ifLoggedInWith><s2o:ifNotLoggedInWith provider="yahoo">no</s2o:ifNotLoggedInWith>
 ```
 
+Extensions
+----------
+
+* [Facebook][spring-security-oauth-facebook-plugin]
+* [Google][spring-security-oauth-google-plugin]
+* [LinkedIn][spring-security-oauth-linkedin-plugin]
+* [Twitter][spring-security-oauth-twitter-plugin]
+* [VK][spring-security-oauth-vkontakte-plugin]
+* [Weibo][spring-security-oauth-weibo-plugin]
+* [Yahoo][spring-security-oauth-yahoo-plugin]
+
 That's it!
 
 [spring-security-plugin]: http://grails.org/plugin/spring-security-core
 [oauth-plugin]: http://grails.org/plugin/oauth-scribe
+[spring-security-oauth-facebook-plugin]: https://github.com/donbeave/grails-spring-security-oauth-facebook
+[spring-security-oauth-google-plugin]: https://github.com/donbeave/grails-spring-security-oauth-google
+[spring-security-oauth-linkedin-plugin]: https://github.com/donbeave/grails-spring-security-oauth-linkedin
+[spring-security-oauth-twitter-plugin]: https://github.com/donbeave/grails-spring-security-oauth-twitter
+[spring-security-oauth-vkontakte-plugin]: https://github.com/donbeave/grails-spring-security-oauth-vkontakte
+[spring-security-oauth-weibo-plugin]: https://github.com/donbeave/grails-spring-security-oauth-weibo
+[spring-security-oauth-yahoo-plugin]: https://github.com/donbeave/grails-spring-security-oauth-yahoo

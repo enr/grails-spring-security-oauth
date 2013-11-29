@@ -1,5 +1,10 @@
 import grails.plugin.springsecurity.SpringSecurityUtils
 
+/**
+* @author <a href='mailto:cazacugmihai@gmail.com'>Mihai Cazacu</a>
+* @author <a href='mailto:enrico@comiti.name'>Enrico Comiti</a>
+* @author <a href='mailto:donbeave@gmail.com'>Alexey Zhokhov</a>
+*/
 class SpringSecurityOauthGrailsPlugin {
     def version = "2.0.2"
     def grailsVersion = "2.0 > *"
@@ -12,7 +17,7 @@ class SpringSecurityOauthGrailsPlugin {
     ]
 
     def title = "Spring Security OAuth plugin"
-    def author = "Mihai Cazacu"
+    def author = "Mihai Cazacu, Enrico Comiti, Alexey Zhokhov"
     def authorEmail = "cazacugmihai@gmail.com"
     def description = '''Adds OAuth-based authentication to the
 [Spring Security plugin|http://grails.org/plugin/spring-security-core] using the
@@ -23,22 +28,35 @@ into existing applications and a host of utility functions to make things like "
 
     def license = "APACHE"
     def organization = [name: "Macrobit Software", url: "http://macrobit.ro/"]
-    def developers = [[name: "Mihai Cazacu", email: "cazacugmihai@gmail.com"]]
+    def developers = [
+        [name: "Mihai Cazacu", email: "cazacugmihai@gmail.com"],
+        [name: "Enrico Comiti", email: "enrico@comiti.name"],
+        [name: "Alexey Zhokhov", email: "donbeave@gmail.com"]]
     def issueManagement = [system: "JIRA", url: "http://jira.grails.org/browse/GPSPRINGSECURITYOAUTH"]
     def scm = [url: 'https://github.com/grails-plugins/grails-spring-security-oauth/']
 
     def doWithSpring = {
         def conf = SpringSecurityUtils.securityConfig
-        if (!conf) {
-            println 'ERROR: There is no Spring Security configuration'
-            println 'ERROR: Stop configuring Spring Security Oauth'
+
+        boolean printStatusMessages = (conf.printStatusMessages instanceof Boolean) ? conf.printStatusMessages : true
+
+        if (!conf || !conf.active) {
             return
         }
 
-        println 'Configuring Spring Security OAuth ...'
         SpringSecurityUtils.loadSecondaryConfig 'DefaultSpringSecurityOAuthConfig'
         // have to get again after overlaying DefaultSpringSecurityOAuthConfig
-        // conf = SpringSecurityUtils.securityConfig
+        conf = SpringSecurityUtils.securityConfig
+
+        if (!conf.oauth.active) {
+            return
+        }
+
+        if (printStatusMessages) {
+            println '\nConfiguring Spring Security OAuth ...'
+
+            println '... finished configuring Spring Security OAuth\n'
+        }
     }
 
 }

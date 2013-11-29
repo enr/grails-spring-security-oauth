@@ -15,6 +15,7 @@
  */
 package grails.plugin.springsecurity.oauth
 
+import grails.converters.JSON
 import org.scribe.model.Token
 import org.springframework.security.authentication.AbstractAuthenticationToken
 import org.springframework.security.core.GrantedAuthority
@@ -25,7 +26,7 @@ import org.springframework.security.core.GrantedAuthority
  * from which dedicated provider tokens can extract extra information such as the
  * principal.
  *
- * @author Mihai CAZACU(cazacugmihai@gmail.com)
+ * @author <a href='mailto:cazacugmihai@gmail.com'>Mihai Cazacu</a>
  */
 abstract class OAuthToken extends AbstractAuthenticationToken {
 
@@ -39,10 +40,11 @@ abstract class OAuthToken extends AbstractAuthenticationToken {
     /**
      * Initialises the token from an access token.
      */
-    OAuthToken(Token accessToken) {
+    OAuthToken(Token accessToken, boolean forceJsonExtractor = false) {
         super(Collections.EMPTY_LIST)
         this.accessToken = accessToken
-        this.tokenParams = extractParameters(accessToken.rawResponse)
+        this.tokenParams = extractParameters(accessToken.rawResponse,
+            forceJsonExtractor ?: accessToken.rawResponse?.trim()?.startsWith('{'))
     }
 
     Object getPrincipal() {
@@ -70,7 +72,10 @@ abstract class OAuthToken extends AbstractAuthenticationToken {
      */
     protected final Map getParameters() { return Collections.unmodifiableMap(tokenParams) }
 
-    private Map extractParameters(String data) {
+    private Map extractParameters(String data, boolean json) {
+        if (json) {
+          return JSON.parse(data)
+        }
         return data.split('&').collectEntries { it.split('=') as List }
     }
 }
